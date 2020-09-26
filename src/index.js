@@ -3,9 +3,28 @@ function eval() {
     return;
 }
 
+function bracketsValidation (exp) {
+    let brackets = exp.map(v => v != "(" && v != ")" ? "" : v).join('');
+    let result = brackets;
+    let replacedBrackets;
+    console.log(replacedBrackets, brackets)
+  
+    while(replacedBrackets != result) {
+        result = brackets;
+        brackets = brackets.replace(/\(\)/g, '');
+        replacedBrackets = brackets;
+    }
+    return !replacedBrackets.length ? true : false;
+}
+
 function expressionCalculator(exp) {
-    
-    exp = exp.replace(/[*/+-]/g, " $& ").split(" ").reduce((res,v) => v != "" ? res.concat(v) : res , [])
+    exp = exp.replace(/[\(\)*/+-]/g, " $& ").split(" ").reduce((res,v) => v != "" ? res.concat(v) : res , []);
+
+    if(!bracketsValidation(exp)) {
+        console.log("GOTCHA!")
+        throw new Error("ExpressionError: Brackets must be paired");
+    }
+
     let operationIndex;
     
     while (exp.includes("*") || exp.includes("/")) {
@@ -19,8 +38,7 @@ function expressionCalculator(exp) {
         operationIndex = exp.findIndex((v,i) => v == "+" || v == "-" ? i : false);
         exp.splice(operationIndex-1, 3, calculate([exp[operationIndex - 1], exp[operationIndex], exp[operationIndex + 1]]));
     }
-    console.log(+exp[0]);
-    return +exp[0];
+    return exp[0];
 }
 
 module.exports = {
